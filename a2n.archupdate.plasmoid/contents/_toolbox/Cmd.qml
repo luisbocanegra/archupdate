@@ -9,13 +9,13 @@ Plasma5Support.DataSource {
   id: executable
   engine: "executable"
   connectedSources: []
-  function onNewData(data) {
+  onNewData: function (source, data) {
     var exitCode = data["exit code"]
     var exitStatus = data["exit status"]
     var stdout = data["stdout"]
     var stderr = data["stderr"]
-    exited(sourceName, exitCode, exitStatus, stdout, stderr)
-    disconnectSource(sourceName)
+    exited(source, exitCode, exitStatus, stdout, stderr)
+    disconnectSource(source)
   }
   function onSourceConnected(source) {
     connected(source)

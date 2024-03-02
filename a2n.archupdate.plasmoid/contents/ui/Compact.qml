@@ -8,25 +8,33 @@ import org.kde.plasma.workspace.components as WorkspaceComponents
 import "components" as Components
 import org.kde.kirigami as Kirigami
 
-PlasmoidItem {
+MouseArea {
   id: row
+  anchors.fill: parent
+  hoverEnabled: true
+  cursorShape: Qt.PointingHandCursor // give user feedback
+  acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+  onClicked: (mouse) => {
+    if (mouse.button == Qt.LeftButton) onLClick()
+    if (mouse.button == Qt.MiddleButton) onMClick()
+  }
 
   property string iconUpdate: "software-update-available.svg"
   property string iconRefresh: "arch-unknown.svg"
   property string totalArch: "0"
   property string totalAur: "0"
 
-  property bool debug: Plasmoid.configuration.debugMode
-  property bool separateResult: Plasmoid.configuration.separateResult
-  property string separator: Plasmoid.configuration.separator
-  property bool dot: Plasmoid.configuration.dot
-  property bool dotUseCustomColor: Plasmoid.configuration.dotUseCustomColor
-  property string dotColor: Plasmoid.configuration.dotColor
+  property bool debug: plasmoid.configuration.debugMode
+  property bool separateResult: plasmoid.configuration.separateResult
+  property string separator: plasmoid.configuration.separator
+  property bool dot: plasmoid.configuration.dot
+  property bool dotUseCustomColor: plasmoid.configuration.dotUseCustomColor
+  property string dotColor: plasmoid.configuration.dotColor
 
   property bool onUpdate: false
   property bool onRefresh: false
 
-  property bool isPanelVertical: formFactor === PlasmaCore.Types.Vertical
+  property bool isPanelVertical: plasmoid.formFactor === PlasmaCore.Types.Vertical
   readonly property bool inTray: parent.objectName === "org.kde.desktop-CompactApplet"
 
   property real itemSize: Math.min(row.height, row.width)
@@ -88,8 +96,8 @@ PlasmoidItem {
       }
 
       // handle the result for the count
-      const cmdIsAur = cmd === Plasmoid.configuration.countAurCommand
-      const cmdIsArch = cmd === Plasmoid.configuration.countArchCommand
+      const cmdIsAur = cmd === plasmoid.configuration.countAurCommand
+      const cmdIsArch = cmd === plasmoid.configuration.countArchCommand
       if (cmdIsArch) totalArch =  stdout.replace(/\n/g, '')
       if (cmdIsAur) totalAur =  stdout.replace(/\n/g, '')
 
@@ -146,24 +154,5 @@ PlasmoidItem {
       visible: isPanelVertical && !dot
       icon: updateIcon
     }
-
-    MouseArea {
-      anchors.fill: container // cover all the zone
-      cursorShape: Qt.PointingHandCursor // give user feedback
-      acceptedButtons: Qt.LeftButton | Qt.MiddleButton
-      onClicked: (mouse) => {
-        if (mouse.button == Qt.LeftButton) onLClick()
-        if (mouse.button == Qt.MiddleButton) onMClick()
-      }
-    }
-  }
-
-  toolTipItem: Loader {
-    id: tooltipLoader
-    Layout.minimumWidth: item ? item.implicitWidth : 0
-    Layout.maximumWidth: item ? item.implicitWidth : 0
-    Layout.minimumHeight: item ? item.implicitHeight : 0
-    Layout.maximumHeight: item ? item.implicitHeight : 0
-    source: "Tooltip.qml"
   }
 }
